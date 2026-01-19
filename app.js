@@ -3,21 +3,25 @@ const ventajas = [5,15,9,17,3,7,13,11,1,14,18,12,10,16,2,8,6,4];
 const pares = [4,5,3,4,4,4,3,5,4,4,3,4,5,4,4,3,4,5];
 const numJugadores = 4;
 
-// Genera la tabla de 18 hoyos para todos los jugadores
+// Genera la tabla de 18 hoyos con Par y Ventaja
 function generarTabla() {
   const tablaDiv = document.getElementById("tabla");
   let html = `<table>
     <tr>
-      <th>Hoyo</th>`;
+      <th>Hoyo</th><th>Par</th><th>Ventaja</th>`;
+
   for (let j = 1; j <= numJugadores; j++) {
     html += `<th>${document.getElementById("nombre"+j).value} Palos</th><th>Puntos</th>`;
   }
   html += `</tr>`;
 
   for (let i = 1; i <= 18; i++) {
-    html += `<tr><td>${i}</td>`;
+    html += `<tr>
+      <td>${i}</td>
+      <td>${pares[i-1]}</td>
+      <td>${ventajas[i-1]}</td>`;
     for (let j = 1; j <= numJugadores; j++) {
-      html += `<td><input type="number" id="h${i}_j${j}" min="0"></td>`;
+      html += `<td><input type="number" id="h${i}_j${j}" min="0" max="9"></td>`;
       html += `<td id="p${i}_j${j}"></td>`;
     }
     html += `</tr>`;
@@ -76,7 +80,7 @@ function calcular() {
   document.getElementById("resultado").innerHTML = resultadoHTML;
 }
 
-// Regenera la tabla al cambiar nombres de jugadores
+// Actualiza tabla si cambian los nombres
 function actualizarTablaNombres() {
   generarTabla();
 }
