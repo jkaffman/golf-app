@@ -79,8 +79,11 @@ function calcular() {
   document.getElementById("resultado").innerHTML = resultadoHTML;
 }
 
-// Guarda la tarjeta en un archivo HTML
+// Guarda la tarjeta en un archivo HTML con fecha
 function guardarTarjeta() {
+  const fechaHoy = new Date();
+  const fechaFormateada = fechaHoy.toLocaleDateString(); // fecha del día de guardado
+
   let html = `
     <!DOCTYPE html>
     <html lang="es">
@@ -91,11 +94,13 @@ function guardarTarjeta() {
         body { font-family: Arial, sans-serif; text-align: center; }
         table { border-collapse: collapse; margin: 0 auto; }
         th, td { border: 1px solid black; padding: 5px; text-align: center; }
-        h2 { margin-bottom: 10px; }
+        h2 { margin-bottom: 5px; }
+        p { margin-top: 0; margin-bottom: 15px; font-weight: bold; }
       </style>
     </head>
     <body>
       <h2>Tarjeta - ${document.getElementById("cancha").value}</h2>
+      <p>Fecha: ${fechaFormateada}</p>
       <table>
         <tr>
           <th>Hoyo</th><th>Par</th><th>Ventaja</th>`;
@@ -148,14 +153,28 @@ function ajustarAlturaImagen() {
   imagen.style.height = altura + "px";
 }
 
+// Actualiza los nombres de la tabla de hoyos al cambiar inputs
+function actualizarNombresTabla() {
+  for (let j = 1; j <= numJugadores; j++) {
+    const thNombre = document.querySelector(`#tabla table tr:first-child th:nth-child(${3 + (j-1)*2})`);
+    if (thNombre) thNombre.innerText = document.getElementById("nombre"+j).value;
+  }
+}
+
 // Inicialización
 window.onload = function() {
   generarTabla();
   ajustarAlturaImagen();
 };
 
-// Actualiza imagen si cambian nombres o handicaps
+// Escucha cambios en nombres y handicaps
 for (let j = 1; j <= numJugadores; j++) {
-  document.getElementById("nombre"+j).addEventListener("input", ajustarAlturaImagen);
+  document.getElementById("nombre"+j).addEventListener("input", function() {
+    actualizarNombresTabla();
+    ajustarAlturaImagen();
+  });
   document.getElementById("handicap"+j).addEventListener("input", ajustarAlturaImagen);
 }
+
+// Ajusta imagen al cambiar tamaño de ventana
+window.addEventListener("resize", ajustarAlturaImagen);
