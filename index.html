@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Golf App – Stableford</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0b6623">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <style>
+    body { font-family: Arial, sans-serif; padding:10px; }
+    table { border-collapse: collapse; width:100%; margin-bottom:20px; }
+    th, td { border:1px solid #444; padding:4px; text-align:center; font-size:14px; }
+    th { background:#eee; }
+    input { width:50px; text-align:center; }
+    .nombre { width:90px; }
+    button { margin:5px; padding:5px 10px; font-size:14px; }
+  </style>
+</head>
+
+<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+<body>
+
+<h1>Golf App ⛳ – Stableford</h1>
+
+<h2>Jugadores</h2>
+<table>
+  <tr><th>Jugador</th><th>Hándicap</th></tr>
+  <tr><td><input class="nombre" id="j1_nombre" value="José"></td><td><input type="number" id="j1_hcp" value="13"></td></tr>
+  <tr><td><input class="nombre" id="j2_nombre" value="Germán"></td><td><input type="number" id="j2_hcp" value="9"></td></tr>
+  <tr><td><input class="nombre" id="j3_nombre" value="Ricardo"></td><td><input type="number" id="j3_hcp" value="22"></td></tr>
+  <tr><td><input class="nombre" id="j4_nombre" value="Cuarto"></td><td><input type="number" id="j4_hcp" value="0"></td></tr>
+</table>
+
+<h2>Tarjeta – Cancha Angostura</h2>
+<table id="tabla-hoyos">
+  <!-- La tabla se genera automáticamente con app.js -->
+</table>
+
+<button onclick="calcular()">Calcular puntos</button>
+<button onclick="guardarPartida()">Guardar partida</button>
+<button onclick="borrarHistorial()">Borrar historial</button>
+
+<h3>Partidas guardadas</h3>
+<div id="partidasGuardadas"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
