@@ -5,45 +5,63 @@
   <title>Golf App - Multi-jugador</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; }
-    header { display: flex; align-items: center; justify-content: center; margin-bottom: 20px; }
-    header img { height: 50px; margin-right: 15px; }
-    table { border-collapse: collapse; text-align: center; width: 100%; max-width: 900px; margin: 0 auto 20px auto; }
-    th, td { border: 1px solid black; padding: 3px; font-size: 0.85em; }
+    h2, h3 { margin: 10px 0; }
+    
+    /* Contenedor flex para imagen + jugadores */
+    #contenedor-jugadores {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    #jugadores { text-align: left; }
+    .jugador { margin-bottom: 10px; }
+
     input { text-align: center; }
     input[name^="nombre"] { width: 70px; }      /* espacio para 9 caracteres */
     input[name^="handicap"] { width: 40px; }    /* espacio para 2 dígitos */
     input[type="number"]:not([name^="handicap"]) { width: 25px; } /* palos */
-    .jugador { margin-bottom: 10px; }
+
+    table { border-collapse: collapse; text-align: center; width: 100%; max-width: 900px; margin: 20px auto; }
+    th, td { border: 1px solid black; padding: 3px; font-size: 0.85em; }
+
     button { margin-top: 10px; padding: 5px 15px; }
   </style>
 </head>
 <body>
 
-  <header>
-  <img src="header_golf.png" alt="3 chiflados jugando golf" height="50">
-  <h2>Golf App - Calculadora Stableford</h2>
-</header>
-  
+<h2>Golf App - Calculadora Stableford</h2>
 
 <label>Nombre de la cancha: <input type="text" id="cancha" value="Angostura"></label>
 
-<h3>Jugadores</h3>
-<div id="jugadores">
-  <div class="jugador">
-    Jugador 1: <input type="text" value="Germán" id="nombre1" name="nombre1">
-    Handicap: <input type="number" value="0" id="handicap1" name="handicap1" min="0" max="99">
+<!-- Contenedor flex imagen + jugadores -->
+<div id="contenedor-jugadores">
+  <!-- Imagen grande a la izquierda -->
+  <div>
+    <img src="header_golf.png" alt="3 chiflados jugando golf" id="imagen-jugadores" style="width:auto;">
   </div>
-  <div class="jugador">
-    Jugador 2: <input type="text" value="José" id="nombre2" name="nombre2">
-    Handicap: <input type="number" value="0" id="handicap2" name="handicap2" min="0" max="99">
-  </div>
-  <div class="jugador">
-    Jugador 3: <input type="text" value="Ricardo" id="nombre3" name="nombre3">
-    Handicap: <input type="number" value="0" id="handicap3" name="handicap3" min="0" max="99">
-  </div>
-  <div class="jugador">
-    Jugador 4: <input type="text" value="Cuarto" id="nombre4" name="nombre4">
-    Handicap: <input type="number" value="0" id="handicap4" name="handicap4" min="0" max="99">
+
+  <!-- Lista de jugadores -->
+  <div id="jugadores">
+    <h3>Jugadores</h3>
+    <div class="jugador">
+      Jugador 1: <input type="text" value="Germán" id="nombre1" name="nombre1">
+      Handicap: <input type="number" value="0" id="handicap1" name="handicap1" min="0" max="99">
+    </div>
+    <div class="jugador">
+      Jugador 2: <input type="text" value="José" id="nombre2" name="nombre2">
+      Handicap: <input type="number" value="0" id="handicap2" name="handicap2" min="0" max="99">
+    </div>
+    <div class="jugador">
+      Jugador 3: <input type="text" value="Ricardo" id="nombre3" name="nombre3">
+      Handicap: <input type="number" value="0" id="handicap3" name="handicap3" min="0" max="99">
+    </div>
+    <div class="jugador">
+      Jugador 4: <input type="text" value="Cuarto" id="nombre4" name="nombre4">
+      Handicap: <input type="number" value="0" id="handicap4" name="handicap4" min="0" max="99">
+    </div>
   </div>
 </div>
 
@@ -56,5 +74,30 @@
 <div id="resultado" style="margin-top: 20px;"></div>
 
 <script src="app.js"></script>
+<script>
+  // Ajusta automáticamente la altura de la imagen a la altura de los jugadores
+  function ajustarAlturaImagen() {
+    const bloqueJugadores = document.getElementById("jugadores");
+    const imagen = document.getElementById("imagen-jugadores");
+    const altura = bloqueJugadores.offsetHeight; // altura total del bloque
+    imagen.style.height = altura + "px";
+  }
+
+  // Ajustar al cargar la página
+  window.onload = function() {
+    generarTabla();        // genera tabla de hoyos
+    ajustarAlturaImagen(); // ajusta altura imagen
+  }
+
+  // Ajustar si cambian los nombres o handicaps
+  const numJugadores = 4;
+  for (let j = 1; j <= numJugadores; j++) {
+    document.getElementById("nombre"+j).addEventListener("input", ajustarAlturaImagen);
+    document.getElementById("handicap"+j).addEventListener("input", ajustarAlturaImagen);
+  }
+
+  // También ajusta si la ventana cambia de tamaño
+  window.addEventListener("resize", ajustarAlturaImagen);
+</script>
 </body>
 </html>

@@ -3,7 +3,7 @@ const ventajas = [5,15,9,17,3,7,13,11,1,14,18,12,10,16,2,8,6,4];
 const pares = [4,5,3,4,4,4,3,5,4,4,3,4,5,4,4,3,4,5];
 const numJugadores = 4;
 
-// Genera tabla compacta: Hoyo, Par, Ventaja, Nombre del jugador + Ptos
+// Genera tabla multi-jugador
 function generarTabla() {
   const tablaDiv = document.getElementById("tabla");
   let html = `<table>
@@ -79,44 +79,83 @@ function calcular() {
   document.getElementById("resultado").innerHTML = resultadoHTML;
 }
 
-// Guarda la tarjeta en un archivo .txt
+// Guarda la tarjeta en un archivo HTML
 function guardarTarjeta() {
-  let contenido = `Resultados - ${document.getElementById("cancha").value}\n\n`;
+  let html = `
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <title>Tarjeta de Golf - ${document.getElementById("cancha").value}</title>
+      <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        table { border-collapse: collapse; margin: 0 auto; }
+        th, td { border: 1px solid black; padding: 5px; text-align: center; }
+        h2 { margin-bottom: 10px; }
+      </style>
+    </head>
+    <body>
+      <h2>Tarjeta - ${document.getElementById("cancha").value}</h2>
+      <table>
+        <tr>
+          <th>Hoyo</th><th>Par</th><th>Ventaja</th>`;
 
   for (let j = 1; j <= numJugadores; j++) {
-    const nombre = document.getElementById("nombre"+j).value;
-    const handicap = parseInt(document.getElementById("handicap"+j).value) || 0;
+    html += `<th>${document.getElementById("nombre"+j).value}</th><th>Ptos</th>`;
+  }
+  html += `</tr>`;
+
+  for (let i = 1; i <= 18; i++) {
+    html += `<tr>
+      <td>${i}</td><td>${pares[i-1]}</td><td>${ventajas[i-1]}</td>`;
+    for (let j = 1; j <= numJugadores; j++) {
+      const palos = document.getElementById(`h${i}_j${j}`).value || "-";
+      const puntos = document.getElementById(`p${i}_j${j}`).innerText || "-";
+      html += `<td>${palos}</td><td>${puntos}</td>`;
+    }
+    html += `</tr>`;
+  }
+
+  // Totales finales
+  html += `<tr><td colspan="3"><strong>Totales</strong></td>`;
+  for (let j = 1; j <= numJugadores; j++) {
     let totalGross = 0;
     let totalPuntos = 0;
-    let hoyos = [];
-
     for (let i = 1; i <= 18; i++) {
       const palos = parseInt(document.getElementById(`h${i}_j${j}`).value) || 0;
       const puntos = parseInt(document.getElementById(`p${i}_j${j}`).innerText) || 0;
-      hoyos.push(`H${i}: ${palos} palos, ${puntos} pts`);
       totalGross += palos;
       totalPuntos += puntos;
     }
-
-    contenido += `${nombre} (Handicap: ${handicap})\n${hoyos.join(", ")}\nTotales: Palos Gross: ${totalGross}, Puntos Netos: ${totalPuntos}\n\n`;
+    html += `<td><strong>${totalGross}</strong></td><td><strong>${totalPuntos}</strong></td>`;
   }
+  html += `</tr>`;
 
-  const blob = new Blob([contenido], { type: "text/plain" });
+  html += `</table></body></html>`;
+
+  const blob = new Blob([html], { type: "text/html" });
   const link = document.createElement("a");
   link.href = URL.createObjectURL(blob);
-  link.download = "tarjeta_golf.txt";
+  link.download = "tarjeta_golf.html";
   link.click();
 }
 
-// Actualiza tabla si cambian los nombres
-function actualizarTablaNombres() {
-  generarTabla();
+// Ajusta la altura de la imagen según bloque de jugadores
+function ajustarAlturaImagen() {
+  const bloqueJugadores = document.getElementById("jugadores");
+  const imagen = document.getElementById("imagen-jugadores");
+  const altura = bloqueJugadores.offsetHeight;
+  imagen.style.height = altura + "px";
 }
 
 // Inicialización
-window.onload = generarTabla;
+window.onload = function() {
+  generarTabla();
+  ajustarAlturaImagen();
+};
 
-// Detecta cambios en nombres y actualiza la tabla
+// Actualiza imagen si cambian nombres o handicaps
 for (let j = 1; j <= numJugadores; j++) {
-  document.getElementById("nombre"+j).addEventListener("input", actualizarTablaNombres);
+  document.getElementById("nombre"+j).addEventListener("input", ajustarAlturaImagen);
+  document.getElementById("handicap"+j).addEventListener("input", ajustarAlturaImagen);
 }
