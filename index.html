@@ -10,8 +10,9 @@
     table { border-collapse: collapse; text-align: center; width: 100%; max-width: 900px; margin: 0 auto 20px auto; }
     th, td { border: 1px solid black; padding: 3px; font-size: 0.85em; }
     input { text-align: center; }
-    input[name^="nombre"] { width: 70px; } /* espacio para 9 caracteres aprox */
-    input[type="number"] { width: 25px; }
+    input[name^="nombre"] { width: 70px; }      /* espacio para 9 caracteres */
+    input[name^="handicap"] { width: 40px; }    /* espacio para 2 dígitos */
+    input[type="number"]:not([name^="handicap"]) { width: 25px; } /* palos */
     .jugador { margin-bottom: 10px; }
     button { margin-top: 10px; padding: 5px 15px; }
   </style>
@@ -29,19 +30,19 @@
 <div id="jugadores">
   <div class="jugador">
     Jugador 1: <input type="text" value="Germán" id="nombre1" name="nombre1">
-    Handicap: <input type="number" value="0" id="handicap1" min="0">
+    Handicap: <input type="number" value="0" id="handicap1" name="handicap1" min="0" max="99">
   </div>
   <div class="jugador">
     Jugador 2: <input type="text" value="José" id="nombre2" name="nombre2">
-    Handicap: <input type="number" value="0" id="handicap2" min="0">
+    Handicap: <input type="number" value="0" id="handicap2" name="handicap2" min="0" max="99">
   </div>
   <div class="jugador">
     Jugador 3: <input type="text" value="Ricardo" id="nombre3" name="nombre3">
-    Handicap: <input type="number" value="0" id="handicap3" min="0">
+    Handicap: <input type="number" value="0" id="handicap3" name="handicap3" min="0" max="99">
   </div>
   <div class="jugador">
     Jugador 4: <input type="text" value="Cuarto" id="nombre4" name="nombre4">
-    Handicap: <input type="number" value="0" id="handicap4" min="0">
+    Handicap: <input type="number" value="0" id="handicap4" name="handicap4" min="0" max="99">
   </div>
 </div>
 
