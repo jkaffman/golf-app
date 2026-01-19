@@ -79,6 +79,35 @@ function calcular() {
   document.getElementById("resultado").innerHTML = resultadoHTML;
 }
 
+// Guarda la tarjeta en un archivo .txt
+function guardarTarjeta() {
+  let contenido = `Resultados - ${document.getElementById("cancha").value}\n\n`;
+
+  for (let j = 1; j <= numJugadores; j++) {
+    const nombre = document.getElementById("nombre"+j).value;
+    const handicap = parseInt(document.getElementById("handicap"+j).value) || 0;
+    let totalGross = 0;
+    let totalPuntos = 0;
+    let hoyos = [];
+
+    for (let i = 1; i <= 18; i++) {
+      const palos = parseInt(document.getElementById(`h${i}_j${j}`).value) || 0;
+      const puntos = parseInt(document.getElementById(`p${i}_j${j}`).innerText) || 0;
+      hoyos.push(`H${i}: ${palos} palos, ${puntos} pts`);
+      totalGross += palos;
+      totalPuntos += puntos;
+    }
+
+    contenido += `${nombre} (Handicap: ${handicap})\n${hoyos.join(", ")}\nTotales: Palos Gross: ${totalGross}, Puntos Netos: ${totalPuntos}\n\n`;
+  }
+
+  const blob = new Blob([contenido], { type: "text/plain" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "tarjeta_golf.txt";
+  link.click();
+}
+
 // Actualiza tabla si cambian los nombres
 function actualizarTablaNombres() {
   generarTabla();
