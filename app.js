@@ -1,7 +1,7 @@
 // Genera la tabla de hoyos automáticamente
 function generarTabla() {
   const tablaDiv = document.getElementById("tabla");
-  let html = `<table border="1" style="border-collapse: collapse; text-align: center;">
+  let html = `<table>
     <tr>
       <th>Hoyo</th>
       <th>Palos</th>
@@ -73,3 +73,4 @@ function calcular() {
 
 // Llama a generar la tabla al cargar la página
 window.onload = generarTabla;
+
