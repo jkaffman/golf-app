@@ -3,7 +3,7 @@ const ventajas = [5,15,9,17,3,7,13,11,1,14,18,12,10,16,2,8,6,4];
 const pares = [4,5,3,4,4,4,3,5,4,4,3,4,5,4,4,3,4,5];
 const numJugadores = 4;
 
-// Genera tabla de 18 hoyos para todos los jugadores
+// Genera la tabla de 18 hoyos para todos los jugadores
 function generarTabla() {
   const tablaDiv = document.getElementById("tabla");
   let html = `<table>
