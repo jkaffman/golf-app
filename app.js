@@ -1,180 +1,131 @@
-// Configuración de hoyos
-const ventajas = [5,15,9,17,3,7,13,11,1,14,18,12,10,16,2,8,6,4];
-const pares = [4,5,3,4,4,4,3,5,4,4,3,4,5,4,4,3,4,5];
-const numJugadores = 4;
-
-// Genera tabla multi-jugador
-function generarTabla() {
-  const tablaDiv = document.getElementById("tabla");
-  let html = `<table>
-    <tr>
-      <th>Hoyo</th><th>Par</th><th>Ventaja</th>`;
-  for (let j = 1; j <= numJugadores; j++) {
-    html += `<th>${document.getElementById("nombre"+j).value}</th><th>Ptos</th>`;
+const canchas = {
+  angostura: {
+    nombre: "Angostura",
+    pares: [4,5,3,4,4,4,3,5,4,4,3,4,5,4,4,3,4,5],
+    ventajas: [5,15,9,17,3,7,13,11,1,14,18,12,10,16,2,8,6,4]
+  },
+  araucarias: {
+    nombre: "Las Araucarias",
+    pares: [4,3,5,4,4,4,4,3,4,5,3,4,5,3,4,4,4,4],
+    ventajas: [7,15,11,9,1,17,3,13,5,10,18,16,14,12,4,8,2,6]
   }
-  html += `</tr>`;
+};
+
+let canchaActual = "angostura";
+
+function generarTabla() {
+  const tabla = document.getElementById("tabla");
+  const thead = tabla.querySelector("thead");
+  const tbody = tabla.querySelector("tbody");
+
+  thead.innerHTML = "";
+  tbody.innerHTML = "";
+
+  const trHead = document.createElement("tr");
+  trHead.innerHTML = "<th>Hoyo</th><th>Par</th><th>Vta</th>";
+
+  for (let j = 1; j <= 4; j++) {
+    const nombre = document.querySelector(`[name="nombre${j}"]`).value;
+    trHead.innerHTML += `<th>${nombre}</th><th>Ptos</th>`;
+  }
+
+  thead.appendChild(trHead);
 
   for (let i = 1; i <= 18; i++) {
-    html += `<tr>
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
       <td>${i}</td>
-      <td>${pares[i-1]}</td>
-      <td>${ventajas[i-1]}</td>`;
-    for (let j = 1; j <= numJugadores; j++) {
-      html += `<td><input type="number" id="h${i}_j${j}" min="0" max="9"></td>`;
-      html += `<td id="p${i}_j${j}"></td>`;
+      <td>${canchas[canchaActual].pares[i-1]}</td>
+      <td>${canchas[canchaActual].ventajas[i-1]}</td>
+    `;
+
+    for (let j = 1; j <= 4; j++) {
+      tr.innerHTML += `
+        <td><input type="number" id="h${j}_${i}"></td>
+        <td id="p${j}_${i}"></td>
+      `;
     }
-    html += `</tr>`;
+
+    tbody.appendChild(tr);
   }
-  html += `</table>`;
-  tablaDiv.innerHTML = html;
 }
 
-// Calcula puntos y totales para todos los jugadores
+function actualizarNombres() {
+  generarTabla();
+}
+
+function cambiarCancha() {
+  canchaActual = document.getElementById("selectorCancha").value;
+  generarTabla();
+}
+
 function calcular() {
-  let resultadoHTML = `<h3>Resultados - ${document.getElementById("cancha").value}</h3>`;
+  let salida = "";
 
-  for (let j = 1; j <= numJugadores; j++) {
-    const handicap = parseInt(document.getElementById("handicap"+j).value) || 0;
-    let totalGross = 0;
-    let totalPuntos = 0;
+  for (let j = 1; j <= 4; j++) {
+    const nombre = document.querySelector(`[name="nombre${j}"]`).value;
+    const hcp = parseInt(document.querySelector(`[name="handicap${j}"]`).value) || 0;
 
-    const golpesBase = Math.floor(handicap / 18);
-    const golpesExtra = handicap % 18;
+    let gross = 0;
+    let puntos = 0;
+
+    const base = Math.floor(hcp / 18);
+    const extra = hcp % 18;
 
     for (let i = 1; i <= 18; i++) {
-      const inputPalos = document.getElementById(`h${i}_j${j}`);
-      const celdaPuntos = document.getElementById(`p${i}_j${j}`);
-      if (!inputPalos || !celdaPuntos) continue;
+      const inp = document.getElementById(`h${j}_${i}`);
+      const celda = document.getElementById(`p${j}_${i}`);
+      const palos = parseInt(inp.value);
 
-      const palos = parseInt(inputPalos.value);
       if (isNaN(palos)) {
-        celdaPuntos.innerText = "-";
+        celda.innerText = "";
         continue;
       }
 
-      totalGross += palos;
+      gross += palos;
 
-      let ventajaHoyo = golpesBase;
-      if (ventajas[i - 1] <= golpesExtra) ventajaHoyo++;
+      let vta = base;
+      if (canchas[canchaActual].ventajas[i-1] <= extra) vta++;
 
-      const neto = palos - ventajaHoyo;
-      const diferencia = pares[i - 1] - neto;
+      const neto = palos - vta;
+      const diff = canchas[canchaActual].pares[i-1] - neto;
 
-      let puntos = 0;
-      if (diferencia >= 3) puntos = 5;
-      else if (diferencia === 2) puntos = 4;
-      else if (diferencia === 1) puntos = 3;
-      else if (diferencia === 0) puntos = 2;
-      else if (diferencia === -1) puntos = 1;
-      else puntos = 0;
+      let p = 0;
+      if (diff >= 3) p = 5;
+      else if (diff === 2) p = 4;
+      else if (diff === 1) p = 3;
+      else if (diff === 0) p = 2;
+      else if (diff === -1) p = 1;
 
-      celdaPuntos.innerText = puntos;
-      totalPuntos += puntos;
+      celda.innerText = p;
+      puntos += p;
     }
 
-    const nombre = document.getElementById("nombre"+j).value;
-    resultadoHTML += `<strong>${nombre}:</strong> Palos Gross: ${totalGross}, Puntos Netos: ${totalPuntos}<br>`;
+    salida += `${nombre}: Gross ${gross} – ${puntos} pts<br>`;
   }
 
-  document.getElementById("resultado").innerHTML = resultadoHTML;
+  document.getElementById("resultado").innerHTML = salida;
 }
 
-// Guarda la tarjeta en un archivo HTML con fecha
 function guardarTarjeta() {
-  const fechaHoy = new Date();
-  const fechaFormateada = fechaHoy.toLocaleDateString(); // fecha del día de guardado
-
-  let html = `
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <meta charset="UTF-8">
-      <title>Tarjeta de Golf - ${document.getElementById("cancha").value}</title>
-      <style>
-        body { font-family: Arial, sans-serif; text-align: center; }
-        table { border-collapse: collapse; margin: 0 auto; }
-        th, td { border: 1px solid black; padding: 5px; text-align: center; }
-        h2 { margin-bottom: 5px; }
-        p { margin-top: 0; margin-bottom: 15px; font-weight: bold; }
-      </style>
-    </head>
+  const fecha = new Date().toLocaleDateString("es-CL");
+  const tabla = document.getElementById("tabla").outerHTML;
+  const html = `
+    <html>
+    <head><meta charset="UTF-8"><title>Tarjeta de Golf</title></head>
     <body>
-      <h2>Tarjeta - ${document.getElementById("cancha").value}</h2>
-      <p>Fecha: ${fechaFormateada}</p>
-      <table>
-        <tr>
-          <th>Hoyo</th><th>Par</th><th>Ventaja</th>`;
-
-  for (let j = 1; j <= numJugadores; j++) {
-    html += `<th>${document.getElementById("nombre"+j).value}</th><th>Ptos</th>`;
-  }
-  html += `</tr>`;
-
-  for (let i = 1; i <= 18; i++) {
-    html += `<tr>
-      <td>${i}</td><td>${pares[i-1]}</td><td>${ventajas[i-1]}</td>`;
-    for (let j = 1; j <= numJugadores; j++) {
-      const palos = document.getElementById(`h${i}_j${j}`).value || "-";
-      const puntos = document.getElementById(`p${i}_j${j}`).innerText || "-";
-      html += `<td>${palos}</td><td>${puntos}</td>`;
-    }
-    html += `</tr>`;
-  }
-
-  // Totales finales
-  html += `<tr><td colspan="3"><strong>Totales</strong></td>`;
-  for (let j = 1; j <= numJugadores; j++) {
-    let totalGross = 0;
-    let totalPuntos = 0;
-    for (let i = 1; i <= 18; i++) {
-      const palos = parseInt(document.getElementById(`h${i}_j${j}`).value) || 0;
-      const puntos = parseInt(document.getElementById(`p${i}_j${j}`).innerText) || 0;
-      totalGross += palos;
-      totalPuntos += puntos;
-    }
-    html += `<td><strong>${totalGross}</strong></td><td><strong>${totalPuntos}</strong></td>`;
-  }
-  html += `</tr>`;
-
-  html += `</table></body></html>`;
+      <h2>Tarjeta – ${canchas[canchaActual].nombre}</h2>
+      <p>Fecha: ${fecha}</p>
+      ${tabla}
+    </body>
+    </html>
+  `;
 
   const blob = new Blob([html], { type: "text/html" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "tarjeta_golf.html";
-  link.click();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `tarjeta_${fecha}.html`;
+  a.click();
 }
 
-// Ajusta la altura de la imagen según bloque de jugadores
-function ajustarAlturaImagen() {
-  const bloqueJugadores = document.getElementById("jugadores");
-  const imagen = document.getElementById("imagen-jugadores");
-  const altura = bloqueJugadores.offsetHeight;
-  imagen.style.height = altura + "px";
-}
-
-// Actualiza los nombres de la tabla de hoyos al cambiar inputs
-function actualizarNombresTabla() {
-  for (let j = 1; j <= numJugadores; j++) {
-    const thNombre = document.querySelector(`#tabla table tr:first-child th:nth-child(${3 + (j-1)*2})`);
-    if (thNombre) thNombre.innerText = document.getElementById("nombre"+j).value;
-  }
-}
-
-// Inicialización
-window.onload = function() {
-  generarTabla();
-  ajustarAlturaImagen();
-};
-
-// Escucha cambios en nombres y handicaps
-for (let j = 1; j <= numJugadores; j++) {
-  document.getElementById("nombre"+j).addEventListener("input", function() {
-    actualizarNombresTabla();
-    ajustarAlturaImagen();
-  });
-  document.getElementById("handicap"+j).addEventListener("input", ajustarAlturaImagen);
-}
-
-// Ajusta imagen al cambiar tamaño de ventana
-window.addEventListener("resize", ajustarAlturaImagen);
+generarTabla();

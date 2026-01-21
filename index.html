@@ -2,102 +2,137 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Golf App - Multi-jugador</title>
+  <title>Golf App – Multi Cancha</title>
+
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; }
-    h2, h3 { margin: 10px 0; }
-    
-    /* Contenedor flex para imagen + jugadores */
-    #contenedor-jugadores {
-      display: flex;
-      align-items: flex-start;
-      justify-content: flex-start;
-      gap: 20px;
-      margin-top: 20px;
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 10px;
     }
 
-    #jugadores { text-align: left; }
-    .jugador { margin-bottom: 10px; }
+    h2 {
+      margin-bottom: 5px;
+    }
 
-    input { text-align: center; }
-    input[name^="nombre"] { width: 70px; }      /* espacio para 9 caracteres */
-    input[name^="handicap"] { width: 40px; }    /* espacio para 2 dígitos */
-    input[type="number"]:not([name^="handicap"]) { width: 25px; } /* palos */
+    .top {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
 
-    table { border-collapse: collapse; text-align: center; width: 100%; max-width: 900px; margin: 20px auto; }
-    th, td { border: 1px solid black; padding: 3px; font-size: 0.85em; }
+    .imagen-golf img {
+      max-height: 180px;
+      border-radius: 8px;
+    }
 
-    button { margin-top: 10px; padding: 5px 15px; }
+    .jugadores {
+      text-align: left;
+    }
+
+    .jugador {
+      margin-bottom: 6px;
+    }
+
+    input[name^="nombre"] {
+      width: 90px;
+    }
+
+    input[name^="handicap"] {
+      width: 40px;
+      text-align: center;
+    }
+
+    select {
+      margin-bottom: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 0 auto 15px auto;
+      font-size: 0.85em;
+      width: 100%;
+      max-width: 950px;
+    }
+
+    th, td {
+      border: 1px solid black;
+      padding: 3px;
+      text-align: center;
+    }
+
+    input[type="number"] {
+      width: 26px;
+      text-align: center;
+    }
+
+    button {
+      margin: 6px;
+      padding: 6px 15px;
+    }
+
+    #resultado {
+      margin-top: 10px;
+      font-weight: bold;
+    }
   </style>
 </head>
+
 <body>
 
-<h2>Golf App - Calculadora Stableford</h2>
+<h2>Golf App – Calculadora Stableford</h2>
 
-<label>Nombre de la cancha: <input type="text" id="cancha" value="Angostura"></label>
+<label>
+  Cancha:
+  <select id="selectorCancha" onchange="cambiarCancha()">
+    <option value="angostura">Angostura</option>
+    <option value="araucarias">Las Araucarias</option>
+  </select>
+</label>
 
-<!-- Contenedor flex imagen + jugadores -->
-<div id="contenedor-jugadores">
-  <!-- Imagen grande a la izquierda -->
-  <div>
-    <img src="header_golf.png" alt="3 chiflados jugando golf" id="imagen-jugadores" style="width:auto;">
+<div class="top">
+  <div class="imagen-golf">
+    <!-- Cambia el archivo cuando quieras -->
+    <img src="header_golf.png" alt="Golf divertido">
   </div>
 
-  <!-- Lista de jugadores -->
-  <div id="jugadores">
+  <div class="jugadores">
     <h3>Jugadores</h3>
+
     <div class="jugador">
-      Jugador 1: <input type="text" value="Germán" id="nombre1" name="nombre1">
-      Handicap: <input type="number" value="0" id="handicap1" name="handicap1" min="0" max="99">
+      <input name="nombre1" value="German" oninput="actualizarNombres()">
+      HCP <input type="number" name="handicap1" value="12">
     </div>
+
     <div class="jugador">
-      Jugador 2: <input type="text" value="José" id="nombre2" name="nombre2">
-      Handicap: <input type="number" value="0" id="handicap2" name="handicap2" min="0" max="99">
+      <input name="nombre2" value="Jose" oninput="actualizarNombres()">
+      HCP <input type="number" name="handicap2" value="14">
     </div>
+
     <div class="jugador">
-      Jugador 3: <input type="text" value="Ricardo" id="nombre3" name="nombre3">
-      Handicap: <input type="number" value="0" id="handicap3" name="handicap3" min="0" max="99">
+      <input name="nombre3" value="Ricardo" oninput="actualizarNombres()">
+      HCP <input type="number" name="handicap3" value="18">
     </div>
+
     <div class="jugador">
-      Jugador 4: <input type="text" value="Cuarto" id="nombre4" name="nombre4">
-      Handicap: <input type="number" value="0" id="handicap4" name="handicap4" min="0" max="99">
+      <input name="nombre4" value="Cuarto" oninput="actualizarNombres()">
+      HCP <input type="number" name="handicap4" value="20">
     </div>
   </div>
 </div>
 
-<h3>Tabla de Hoyos</h3>
-<div id="tabla"></div>
+<table id="tabla">
+  <thead></thead>
+  <tbody></tbody>
+</table>
 
-<button onclick="calcular()">Calcular Totales</button>
-<button onclick="guardarTarjeta()">Guardar Tarjeta</button>
+<button onclick="calcular()">Calcular</button>
+<button onclick="guardarTarjeta()">Guardar tarjeta</button>
 
-<div id="resultado" style="margin-top: 20px;"></div>
+<div id="resultado"></div>
 
 <script src="app.js"></script>
-<script>
-  // Ajusta automáticamente la altura de la imagen a la altura de los jugadores
-  function ajustarAlturaImagen() {
-    const bloqueJugadores = document.getElementById("jugadores");
-    const imagen = document.getElementById("imagen-jugadores");
-    const altura = bloqueJugadores.offsetHeight; // altura total del bloque
-    imagen.style.height = altura + "px";
-  }
-
-  // Ajustar al cargar la página
-  window.onload = function() {
-    generarTabla();        // genera tabla de hoyos
-    ajustarAlturaImagen(); // ajusta altura imagen
-  }
-
-  // Ajustar si cambian los nombres o handicaps
-  const numJugadores = 4;
-  for (let j = 1; j <= numJugadores; j++) {
-    document.getElementById("nombre"+j).addEventListener("input", ajustarAlturaImagen);
-    document.getElementById("handicap"+j).addEventListener("input", ajustarAlturaImagen);
-  }
-
-  // También ajusta si la ventana cambia de tamaño
-  window.addEventListener("resize", ajustarAlturaImagen);
-</script>
 </body>
 </html>
