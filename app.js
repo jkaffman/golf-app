@@ -25,8 +25,8 @@ function generarTabla() {
   trHead.innerHTML = "<th>Hoyo</th><th>Par</th><th>Vta</th>";
 
   for (let j = 1; j <= 4; j++) {
-    const nombre = document.querySelector(`[name="nombre${j}"]`).value;
-    trHead.innerHTML += `<th>${nombre}</th><th>Ptos</th>`;
+    const nombre = document.querySelector(`[name="nombre${j}"]`).value || `Jugador ${j}`;
+    trHead.innerHTML += `<th>${nombre}<br>Palos</th><th>Ptos</th>`;
   }
 
   thead.appendChild(trHead);
@@ -63,7 +63,7 @@ function calcular() {
   let salida = "";
 
   for (let j = 1; j <= 4; j++) {
-    const nombre = document.querySelector(`[name="nombre${j}"]`).value;
+    const nombre = document.querySelector(`[name="nombre${j}"]`).value || `Jugador ${j}`;
     const hcp = parseInt(document.querySelector(`[name="handicap${j}"]`).value) || 0;
 
     let gross = 0;
@@ -107,18 +107,81 @@ function calcular() {
   document.getElementById("resultado").innerHTML = salida;
 }
 
+/***********************
+ * GUARDAR TARJETA PRO
+ ***********************/
 function guardarTarjeta() {
   const fecha = new Date().toLocaleDateString("es-CL");
-  const tabla = document.getElementById("tabla").outerHTML;
-  const html = `
-    <html>
-    <head><meta charset="UTF-8"><title>Tarjeta de Golf</title></head>
-    <body>
-      <h2>Tarjeta – ${canchas[canchaActual].nombre}</h2>
-      <p>Fecha: ${fecha}</p>
-      ${tabla}
-    </body>
-    </html>
+
+  let html = `
+  <html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Tarjeta de Golf</title>
+    <style>
+      body { font-family: Arial, sans-serif; }
+      table { border-collapse: collapse; width: 100%; font-size: 12px; }
+      th, td { border: 1px solid #333; padding: 5px; text-align: center; }
+      th { background: #f0f0f0; }
+      h2, p { text-align: center; }
+    </style>
+  </head>
+  <body>
+
+  <h2>Tarjeta de Golf – ${canchas[canchaActual].nombre}</h2>
+  <p>Fecha: ${fecha}</p>
+
+  <table>
+    <tr>
+      <th>Hoyo</th>
+      <th>Par</th>
+      <th>Vta</th>
+  `;
+
+  for (let j = 1; j <= 4; j++) {
+    const nombre = document.querySelector(`[name="nombre${j}"]`).value || `Jugador ${j}`;
+    html += `<th>${nombre}<br>Palos / Ptos</th>`;
+  }
+
+  html += `</tr>`;
+
+  let totalGross = [0,0,0,0];
+  let totalPuntos = [0,0,0,0];
+
+  for (let i = 1; i <= 18; i++) {
+    html += `
+      <tr>
+        <td>${i}</td>
+        <td>${canchas[canchaActual].pares[i-1]}</td>
+        <td>${canchas[canchaActual].ventajas[i-1]}</td>
+    `;
+
+    for (let j = 1; j <= 4; j++) {
+      const palos = parseInt(document.getElementById(`h${j}_${i}`).value) || 0;
+      const p = parseInt(document.getElementById(`p${j}_${i}`).innerText) || 0;
+
+      totalGross[j-1] += palos;
+      totalPuntos[j-1] += p;
+
+      html += `<td>${palos} / ${p}</td>`;
+    }
+
+    html += `</tr>`;
+  }
+
+  html += `
+    <tr>
+      <th colspan="3">Total Gross</th>
+      ${totalGross.map(v => `<th>${v}</th>`).join("")}
+    </tr>
+    <tr>
+      <th colspan="3">Total Puntos</th>
+      ${totalPuntos.map(v => `<th>${v}</th>`).join("")}
+    </tr>
+  </table>
+
+  </body>
+  </html>
   `;
 
   const blob = new Blob([html], { type: "text/html" });
